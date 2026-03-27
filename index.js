@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 Webhook route
 */
 
-app.post("/webhook", async (req, res) => {
+app.post("/neoupi-webhook", async (req, res) => {
   try {
     console.log("Webhook received:", req.body);
 
