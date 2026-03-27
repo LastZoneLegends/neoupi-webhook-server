@@ -82,7 +82,7 @@ app.post("/create-order", async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: process.env.NEOUPI_SECRET_KEY,
+        Authorization: `Bearer ${process.env.NEOUPI_SECRET_KEY}`
       },
       body: JSON.stringify({
         amount: amount,
