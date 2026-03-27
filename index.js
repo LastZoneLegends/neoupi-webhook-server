@@ -69,40 +69,34 @@ app.post("/create-order", async (req, res) => {
   try {
     const { amount, userId } = req.body;
 
-    if (!amount || !userId) {
-      return res.status(400).json({
-        success: false,
-        message: "Amount or userId missing",
-      });
-    }
-
-    const orderId = `${userId}_${Date.now()}`;
-
-    const response = await fetch("https://neoupi.com/apis/v1/pay", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEOUPI_SECRET_KEY}`
-      },
-      body: JSON.stringify({
-        amount: amount,
-        order_id: orderId,
-        currency: "INR",
-      }),
-    });
+    const response = await fetch(
+      "https://neoupi.com/apis/v1/pay",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEOUPI_SECRET_KEY}`
+        },
+        body: JSON.stringify({
+          amount: amount,
+          user_id: userId,
+          currency: "INR"
+        })
+      }
+    );
 
     const data = await response.json();
 
-    res.json({
-      success: true,
-      payment_url: data.payment_url,
-    });
-  } catch (error) {
-    console.log(error);
+    console.log("NeoUPI response:", data);
 
+    res.json({
+      payment_url: data.payment_url
+    });
+
+  } catch (err) {
+    console.log(err);
     res.status(500).json({
-      success: false,
-      message: "Create order failed",
+      error: "Order creation failed"
     });
   }
 });
