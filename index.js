@@ -69,6 +69,8 @@ app.post("/create-order", async (req, res) => {
   try {
     const { amount, userId } = req.body;
 
+    const orderId = "ORD_" + Date.now();
+
     const response = await fetch(
       "https://neoupi.com/apis/v1/pay",
       {
@@ -79,8 +81,9 @@ app.post("/create-order", async (req, res) => {
         },
         body: JSON.stringify({
           amount: amount,
-          user_id: userId,
-          currency: "INR"
+          order_id: orderId,
+          customer_mobile: "9999999999",
+          redirect_url: "https://lastzone.netlify.app/wallet"
         })
       }
     );
@@ -89,12 +92,19 @@ app.post("/create-order", async (req, res) => {
 
     console.log("NeoUPI response:", data);
 
+    if (!data.payment_url) {
+      return res.status(400).json({
+        error: "Payment URL not received",
+        response: data
+      });
+    }
+
     res.json({
       payment_url: data.payment_url
     });
 
   } catch (err) {
-    console.log(err);
+    console.log("Create order error:", err);
     res.status(500).json({
       error: "Order creation failed"
     });
